@@ -38,9 +38,5 @@ Install the package:
 
     python setup.py install    
 
-Example
---------
-
-.. code:: python
-
-    << EXAMPLE GOES HERE>>
+Please download the solution Architecture here:
+https://github.com/ashishverma30/image_embedding/blob/main/Adidas%20Case%20Study.pptx
