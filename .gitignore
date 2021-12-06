@@ -29,7 +29,6 @@
 /docs/_build
 /ipch
 /msvc-projects
-/src
 
 # Testing.
 *.spyderproject
@@ -56,4 +55,4 @@ ipython_config.py
 logs/
 local/
 
-data/
+data/*
