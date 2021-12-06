@@ -29,7 +29,7 @@ For a manual install get this package:
 
 ::
 
-    wget https://github.com/ashishverma30/image_embedding
+    git clone https://github.com/ashishverma30/image_embedding
     cd image_embedding
 
 Install the package:
