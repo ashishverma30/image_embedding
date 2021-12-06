@@ -21,22 +21,34 @@ Installation
 
 Fast install:
 
-::
-
-    pip install image_embedding
+```bash
+	pip install image_embedding
+```   
 
 For a manual install get this package:
 
-::
-
-    git clone https://github.com/ashishverma30/image_embedding
+```bash
+git clone https://github.com/ashishverma30/image_embedding
     cd image_embedding
+```
 
 Install the package:
+```bash
+    python setup.py install
+```  
 
-::
+Create Docker Image:
+```bash
+	make base-build
+```
+	
 
-    python setup.py install    
+Once it has built successfully, you can create an interactive shell, by running:
 
+```bash
+make base-interactive
+```
+	
 Please download the solution Architecture here:
+----------------------------------------------
 https://github.com/ashishverma30/image_embedding/blob/main/Adidas%20Case%20Study.pptx
