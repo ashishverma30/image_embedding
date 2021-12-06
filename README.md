@@ -22,24 +22,24 @@ Installation
 Fast install:
 
 ```bash
-	pip install image_embedding
+pip install image_embedding
 ```   
 
 For a manual install get this package:
 
 ```bash
 git clone https://github.com/ashishverma30/image_embedding
-    cd image_embedding
+cd image_embedding
 ```
 
 Install the package:
 ```bash
-    python setup.py install
+ python setup.py install
 ```  
 
 Create Docker Image:
 ```bash
-	make base-build
+make base-build
 ```
 	
 
