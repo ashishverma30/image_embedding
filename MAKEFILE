@@ -102,7 +102,7 @@ help:
 # You can easily chain a number of targets
 bootstrap: clean install-hooks dev docs ## Installs development packages, hooks and generate docs for development
 
-build-image:  ## Build docker image from local Dockerfile.
+base-build:  ## Build docker image from local Dockerfile.
 	docker build -f Dockerfile --no-cache -t $(DOCKER_IMAGE) .
 
 build-cached-image:  ## Build cached docker image from local Dockerfile.
@@ -120,6 +120,11 @@ install: clean ## Check if package exist, if not install the package
 
 venv:  ## Create virtualenv environment on local directory.
 	@$(create-venv)
+
+base-interactive: .bash_history
+	docker run --rm -it -v $(CO_DIR):/ -v $(CO_DIR)/.bash_history:/root/.bash_history \
+		--workdir=/image_embeddings/
+	
 
 # ---------------------------------- Python Packaging ------------------------------------
 dist: clean ## Builds source and wheel package
