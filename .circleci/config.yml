@@ -1,0 +1,127 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@1.6.0
+
+executors:
+  base:
+    parameters:
+      resource_class:
+        type: string
+        default: large
+    docker:
+      - image: image_name
+        auth:
+          username: <<username>>
+          password: <<password>>
+    resource_class: << parameters.resource_class >>
+    working_directory: /adidas
+
+commands:
+  setup_conda:
+    description: Activate conda environment
+    steps:
+      - run:
+          name: Run conda.sh
+          command: echo ". /miniconda/etc/profile.d/conda.sh" >> $BASH_ENV
+      - run:
+          name: Activate conda environment
+          command: echo "conda deactivate; conda activate adidas" >> $BASH_ENV
+
+  restore_install_cache_dependencies:
+    description: Restore --> install --> cache the python dependencies.
+    steps:
+      - setup_conda
+      - run:
+          name: Install python dependencies
+          command: |
+            pip install 'numba<0.54.0' shap==0.40.0
+      - save_cache:
+          key: conda-cache-{{ checksum "/tmp/requirements-hash" }}
+          paths:
+            - /miniconda/envs/adidas/
+
+utils:
+  win_e2e_tests__install: &win_e2e_tests__install
+    name: Install dependencies
+    command: |
+      conda activate customerone_builder
+      pip install -r features/requirements.txt      
+      
+  win_e2e_tests__run: &win_e2e_tests__run
+    name: Run e2e tests
+    no_output_timeout: 50m
+    command: |
+      conda activate customerone_builder
+      behave features/adidas.feature    
+      
+jobs:
+  run_black:
+    executor: base
+    steps:
+      - checkout
+      - restore_install_cache_dependencies
+      - run:
+          name: Run black-jupyter
+          command: |
+            pre-commit install
+            pre-commit run black-jupyter --all-files
+
+  run_end_of_file_fixer:
+    executor: base
+    steps:
+      - checkout
+      - restore_install_cache_dependencies
+      - run:
+          name: Run end-of-file-fixer pre-commit hook
+          command: |
+            pre-commit install
+            pre-commit run end-of-file-fixer --all-files
+
+  run_tests_adidas:
+    executor: base
+    steps:
+      - run_if_domain_modified:
+          domain: cpg
+      - checkout
+      - restore_install_cache_dependencies
+      - run:
+          name: Run pytest on src/
+          command: |
+            pytest src/
+
+
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - docker/publish:
+          docker-username: <<USER>>
+          docker-password: <<PASSWORD>>
+          registry: <<registry>>
+          image: <<image_name>>
+          tag: latest
+          dockerfile: Dockerfile.builder
+          filters:
+            branches:
+              only: develop
+      - run_black
+      - run_end_of_file_fixer
+      - run_import_linter
+      - run_isort
+      - run_tests_cpg
+      - run_integration_tests:
+          name: run_integration_tests_adidas
+          resource_class: xlarge
+          parallelism: 4
+          domain: adidas
+          no_output_timeout: 1.5h   
+      - all_checks_passed:
+          requires:
+            - run_black
+            - run_end_of_file_fixer
+            - run_import_linter
+            - run_isort
+            - run_tests_cpg
+
+            
